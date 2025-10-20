@@ -17,7 +17,6 @@ const ProfileModal = ({ isOpen, onClose }) => {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose}></div>
-
       <div className="absolute top-20 right-8 z-50 w-64 bg-gradient-to-b from-[#1A2234]/95 to-[#0F1419]/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl overflow-hidden">
         
 

@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { ServerUrl } from "../config/config";
 import axios from "axios"
-import { getAcessToken } from "./TokenManager";
+import { getAcessToken, isTokenExpired, refreshAccessToken } from "./TokenManager";
 
 
 export const showToast = (message,type) =>{
@@ -52,6 +52,7 @@ export const makeAuthenticatedRequest = async (ACTION, SERVICE, data) => {
         console.log('Access token is missing or expired, refreshing token...');
         accessToken = await refreshAccessToken();
         if(!accessToken){
+            console.log("oops seems you are not logged in, and this is a protected route");
             return null;
         }
     }
@@ -60,7 +61,6 @@ export const makeAuthenticatedRequest = async (ACTION, SERVICE, data) => {
         let url = ServerUrl
 
         const payload = {ACTION, SERVICE, ...data};
-        console.log('request payload:', JSON.stringify(payload));
 
         let config ={
             headers:{
@@ -69,8 +69,8 @@ export const makeAuthenticatedRequest = async (ACTION, SERVICE, data) => {
 
             }
         };
-        console.log('request payload:', JSON.stringify(payload));
         const response = await axios.post(url, payload, config);
+        console.log("request was successful");
         return response.data;
     }catch(error){
         console.error("Error making authenticated request:", error);

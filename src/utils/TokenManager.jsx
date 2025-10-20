@@ -42,7 +42,7 @@ export const refreshAccessToken = async () =>{
         const response = makeRequest('Auth', 'refresh', refreshToken);
 
         if(response?.return === 0){
-            const {token, refreshToken, user} = response?.returnObject || {};
+            const {token, refreshToken} = response?.returnObject || {};
 
             if(!token || !refreshToken){
                 throw new Error ('invalid response from refresh end point');
@@ -56,6 +56,7 @@ export const refreshAccessToken = async () =>{
             const errorMessage = response?.returnMessage || 'failed to refresh end point';
             clearTokens();
             showToast('session expired, please login again', 'error');
+            console.error ('token refresh error:', errorMessage);
             window.location.href = '/';
             return null;
         }

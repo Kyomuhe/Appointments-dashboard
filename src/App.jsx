@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import { Toaster } from 'sonner';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
+import Doctors from './components/Doctors';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
+        <Route path = 'doctors' element ={<Doctors/>} />
 
         <Route path ="/layout" element ={
           <ProtectedRoute>
@@ -21,6 +23,8 @@ function App() {
           }>
             <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path = 'doctors' element ={<Doctors/>} />
+
 
 
         </Route>

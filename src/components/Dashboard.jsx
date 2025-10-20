@@ -1,5 +1,6 @@
 import { Calendar, Users, Clock, CheckCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import nextDoc from '../assets/nextDoc.png'
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -9,6 +10,10 @@ const Dashboard = () => {
     availableDoctors: 0
   });
   const [recentAppointments, setRecentAppointments] = useState([]);
+  const user = useMemo(() => {
+      return JSON.parse(localStorage.getItem('user'));
+    }, [])
+  
 
   useEffect(() => {
     fetchDashboardData();
@@ -69,7 +74,27 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+    <div className="bg-blue-500 py-16 px-8 rounded">
+      <div className="max-w-6xl mx-auto flex items-center justify-between gap-12">
+        <div className="flex-shrink-0">
+          <img 
+            src={nextDoc} 
+            alt="Doctor with telemedicine screen" 
+            className="w-80 h-auto"
+          />
+        </div>
 
+        <div className="text-white">
+          <p className="text-3xl font-semibold mb-4">
+            Leading High Quality<br />
+            Virtual Health Platform
+          </p>
+          <p className="text-lg opacity-95">
+            Ready to book your appointment, {user.lastName}?
+          </p>
+        </div>
+      </div>
+    </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           icon={Calendar}

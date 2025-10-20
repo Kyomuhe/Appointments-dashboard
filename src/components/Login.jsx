@@ -36,15 +36,15 @@ const Login = () => {
           showToast(errorMessage, 'error');
           return;
         }
+
         const { token, user, refreshToken} = data?.returnObject || {};
+
         if (!token || !user){
           const errorMessage = 'server is misbahaved. please try again later.';
           setFieldError('general', errorMessage);
           showToast (errorMessage, 'error');
           return;
         }
-        
-
 
           localStorage.setItem('accessToken', token);
           localStorage.setItem('user', JSON.stringify(user));
@@ -59,7 +59,8 @@ const Login = () => {
       }catch(error){
         console.error('Login error:', error);
 
-      }
+      }finally{
+        setSubmitting (false);}
     }
   });
 

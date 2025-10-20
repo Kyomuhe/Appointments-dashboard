@@ -10,9 +10,9 @@ const Sidemenu = () => {
 
   const menuItems = [
     { icon: LayoutGrid, name: 'Dashboard', id: 'dashboard', path: '/layout/dashboard' },
-    { icon: Calendar, name: 'Appointments', id: 'appointments', path: '/layout/appointments' },
+    { icon: Calendar, name: 'Appointments', id: 'appointments'},
     { icon: Users, name: 'Doctors', id: 'doctors', path: '/layout/doctors' },
-    { icon: Calendar, name: 'My Calendar', id: 'calendar', path: '/layout/calendar' },
+    { icon: Calendar, name: 'My Calendar', id: 'calendar'},
   ]
 
   const getActiveItem = () => {
@@ -69,7 +69,6 @@ const Sidemenu = () => {
         })}
       </nav>
 
-      {/* Expand Button - Shown when Collapsed */}
       {isCollapsed && (
         <div className='p-3'>
           <button

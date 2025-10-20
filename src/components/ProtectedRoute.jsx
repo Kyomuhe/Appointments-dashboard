@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { getAcessToken, isTokenExpired } from '../utils/TokenManager';
+import { getAcessToken } from '../utils/TokenManager';
 const ProtectedRoute = ({ children }) => {
   const token = getAcessToken();
   
