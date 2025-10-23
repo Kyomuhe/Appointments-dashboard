@@ -11,6 +11,7 @@ const Doctors = () => {
     const [filteredDoctors, setFilteredDoctors] = useState([])
     const [loading, setLoading] = useState(true)
     const [isAppointmentModalOpen, setAppointmentModal] = useState(false);
+    
 
 
     useEffect(() => {
@@ -26,6 +27,7 @@ const Doctors = () => {
             setLoading(true)
             const response = await makeAuthenticatedRequest("displayDoctors", "doc", {})
             const data = response
+            console.log(JSON.stringify(data))
 
             if (data?.returnCode !== 0) {
                 const errorMessage = data?.returnMessage || 'Failed to fetch doctors'
@@ -35,7 +37,10 @@ const Doctors = () => {
             }
 
             const doctorsList = data?.returnObject || []
+            console.log("this is the doctor list")
+            console.log(doctorsList)
             setDoctors(doctorsList)
+
             if (doctorsList.length > 0) {
                 setSelectedDoctor(doctorsList[0])
             }
@@ -133,8 +138,14 @@ const Doctors = () => {
                                         </div>
                                     </div>
                                     <button
-                                    onClick = {() => setAppointmentModal(!isAppointmentModalOpen)}
- 
+                                    onClick = {
+                                        () => {
+                                        setAppointmentModal(!isAppointmentModalOpen);
+                                        setSelectedDoctor(selectedDoctor);
+                                        //setSelectedDoctor(selectedDoctor.name)
+                                        // setSelectedDoctor(selectedDoctor.id)
+                                        }
+                                    }
                                     className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">
                                         Make an Appointment
                                     </button>
@@ -176,6 +187,9 @@ const Doctors = () => {
             }<BookAppointmentModal
             isOpen={isAppointmentModalOpen}
             onClose = {() => setAppointmentModal(false)}
+            doctor = {selectedDoctor}
+           // DoctorName = {selectedDoctor}
+            
             />
 
         </div>

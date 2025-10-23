@@ -45,12 +45,12 @@ const Appointment = () => {
     });
   };
 
-  const formatTime = (timeString) => {
-    return new Date(timeString).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  // const formatTime = (timeString) => {
+  //   return new Date(timeString).toLocaleTimeString('en-US', {
+  //     hour: '2-digit',
+  //     minute: '2-digit'
+  //   });
+  // };
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -139,7 +139,7 @@ const Appointment = () => {
                         </div>
                         <div className="flex items-center gap-2 text-gray-400 text-xs">
                           <Clock className="w-4 h-4" />
-                          <span>{formatTime(appointment.scheduledTime)}</span>
+                          <span>{(appointment.scheduledTime)}</span>
                         </div>
                       </div>
                     </td>

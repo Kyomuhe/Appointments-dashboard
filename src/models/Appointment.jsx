@@ -1,20 +1,33 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { X, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
-//import { makeAuthenticatedRequest, showToast } from '../utils/util';
+import { makeAuthenticatedRequest, showToast } from '../utils/util';
 
-const BookAppointmentModal = ({ isOpen, onClose }) => {
-  const [selectedTime, setSelectedTime] = useState('8:00 am - 1:00 am');
+const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
+  const [selectedTime, setSelectedTime] = useState();
   const [selectedDate, setSelectedDate] = useState(null);
   const [description, setDescription] = useState('');
   const [currentDate, setCurrentDate] = useState(new Date());
+  const user = useMemo(
+    () =>{
+      return JSON.parse(localStorage.getItem('user'))
+    },[]
+  )
 
   if (!isOpen) return null;
+  //console.log("trying to test time ranges")
+  //console.log(JSON.stringify(timeRanges))
+  //console.log(DoctorName)
+  const selectedDoctorId = doctor?.id
+  const selectedDoctorName =doctor?.name
+  const timeRanges = doctor?.timeRanges
+  const timeSlots = timeRanges.split(',').map(slot => slot.trim())
+  //console.log(timeSlots)
 
-  const timeSlots = [
-    '8:00 am - 1:00 am',
-    '02:00 am - 03:00 pm',
-    '03:00 pm - 04:00 pm'
-  ];
+  // const timeSlots = [
+  //   '8:00 am - 1:00 am',
+  //   '02:00 am - 03:00 pm',
+  //   '03:00 pm - 04:00 pm'
+  // ];
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                       'July', 'August', 'September', 'October', 'November', 'December'];
@@ -47,6 +60,47 @@ const BookAppointmentModal = ({ isOpen, onClose }) => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
   };
 
+  const makingAppointment = async()=>{
+    try{
+      if (!selectedDate) {
+        showToast("Please select a date", "error");
+        return;
+      }
+    if (!selectedTime) {
+      showToast("Please select a time slot", "error");
+      return;
+    }
+
+
+    const doctorName =selectedDoctorName
+    const doctorId = selectedDoctorId
+    const patientName = user.lastName + ' ' + user.firstName
+    const patientId = user.id
+    const timeRange = selectedTime
+    const notes = description
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate).padStart(2, '0');
+    const scheduledDate = `${year}-${month}-${day}`;
+    const data ={doctorName, doctorId, patientName, timeRange, notes, scheduledDate, patientId}
+    console.log(data)
+
+    const response = await makeAuthenticatedRequest("makeAppointment", "appointment",data)
+    console.log(response)
+    if(response?.returnCode !== 0){
+      const errorMessage = response?.returnMessage || "oops failed to make appointment"
+      showToast(errorMessage, "error")
+      return;
+    }
+    showToast ('booked successfully', 'success');
+    onClose()
+    }catch(error){
+      showToast("oops some thing unexpected happend", "error")
+      console.log(error)
+
+    }
+  }
+
   return (
     <>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fadeIn" onClick={onClose} />
@@ -54,7 +108,7 @@ const BookAppointmentModal = ({ isOpen, onClose }) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div className="relative bg-gradient-to-br from-[#1A2234] to-[#0F1419] rounded-xl shadow-2xl w-full max-w-3xl border border-white/10 pointer-events-auto animate-scaleIn">
           <div className="bg-gradient-to-r from-[#1A2234] to-[#0F1419] px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Book Appointment</h2>
+            <h2 className="text-xl font-bold text-white">Booking with Doctor {selectedDoctorName}</h2>
             <button
               onClick={onClose}
               className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
@@ -164,7 +218,9 @@ const BookAppointmentModal = ({ isOpen, onClose }) => {
             </div>
 
 
-            <button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all text-sm">
+            <button 
+            onClick={() => makingAppointment()}
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all text-sm">
               Book Appointment
             </button>
           </div>
