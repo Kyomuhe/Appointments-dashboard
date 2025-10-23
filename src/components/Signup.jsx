@@ -231,9 +231,13 @@ const validationSchema = Yup.object().shape(
 
         <p className="text-center text-sm text-gray-300">
           Already have an account?{' '}
-          <a href="/" className="text-blue-400 hover:underline">
+          <div onClick={()=>{
+            navigate("/")
+          }}>
+          <a className="text-blue-400 hover:underline">
             Login here
           </a>
+          </div>
         </p>
       </div>
     </div>

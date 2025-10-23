@@ -10,7 +10,7 @@ const Sidemenu = () => {
 
   const menuItems = [
     { icon: LayoutGrid, name: 'Dashboard', id: 'dashboard', path: '/layout/dashboard' },
-    { icon: Calendar, name: 'Appointments', id: 'appointments'},
+    { icon: Calendar, name: 'Appointments', id: 'appointments', path:'/layout/appointments'},
     { icon: Users, name: 'Doctors', id: 'doctors', path: '/layout/doctors' },
     { icon: Calendar, name: 'My Calendar', id: 'calendar'},
   ]

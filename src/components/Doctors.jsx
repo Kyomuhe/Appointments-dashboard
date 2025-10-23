@@ -1,7 +1,8 @@
 import {showToast , makeAuthenticatedRequest} from "../utils/util"
 import { useState, useEffect } from "react"
 import { Star, Clock, DollarSign } from "lucide-react"
-import avatar from '../assets/default.png'
+import avatar from '../assets/doctor1.png'
+import BookAppointmentModal from "../models/Appointment"
 
 const Doctors = () => {
     const [doctors, setDoctors] = useState([])
@@ -9,6 +10,8 @@ const Doctors = () => {
     const [selectedSpecialty, setSelectedSpecialty] = useState('All')
     const [filteredDoctors, setFilteredDoctors] = useState([])
     const [loading, setLoading] = useState(true)
+    const [isAppointmentModalOpen, setAppointmentModal] = useState(false);
+
 
     useEffect(() => {
         displayDoctors()
@@ -26,8 +29,9 @@ const Doctors = () => {
 
             if (data?.returnCode !== 0) {
                 const errorMessage = data?.returnMessage || 'Failed to fetch doctors'
-                showToast("Oops, something unexpected happened", 'error')
-                return
+                showToast(`${errorMessage}`, 'error')
+                console.error(errorMessage)
+                return;
             }
 
             const doctorsList = data?.returnObject || []
@@ -109,7 +113,6 @@ const Doctors = () => {
                         </div>
                     </div>
 
-                    {/* Doctor Details */}
                     {selectedDoctor && (
                         <div className="flex-1 overflow-y-auto">
                             <div className="bg-white/5 border border-white/10 rounded-lg p-6">
@@ -129,17 +132,20 @@ const Doctors = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">
+                                    <button
+                                    onClick = {() => setAppointmentModal(!isAppointmentModalOpen)}
+ 
+                                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">
                                         Make an Appointment
                                     </button>
                                 </div>
+
 
                                 <div className="mb-5 pb-5 border-b border-white/10">
                                     <p className="text-xs text-gray-400 font-semibold mb-1">EDUCATION</p>
                                     <p className="text-sm text-white">{selectedDoctor.education}</p>
                                 </div>
 
-                                {/* Details */}
                                 <div className="space-y-4">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
@@ -166,7 +172,12 @@ const Doctors = () => {
                         </div>
                     )}
                 </div>
-            )}
+            )
+            }<BookAppointmentModal
+            isOpen={isAppointmentModalOpen}
+            onClose = {() => setAppointmentModal(false)}
+            />
+
         </div>
     )
 }

@@ -131,10 +131,15 @@ const Login = () => {
 
         <p className="text-center text-sm text-gray-300">
           Don’t have an account?{' '}
-          <a href="/signup" className="text-blue-400 hover:underline">
+        <div>
+        <a 
+        onClick={()=>{navigate("/signup")}}
+        className="text-blue-400 hover:underline cursor-pointer">
             Create one
           </a>
+          </div>
         </p>
+    
       </div>
     </div>
   );

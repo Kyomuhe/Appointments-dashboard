@@ -7,7 +7,7 @@ const Header = () => {
   const [greeting, setGreeting] = useState('')
   const user = useMemo(() => {
     return JSON.parse(localStorage.getItem('user'));
-  }, [])
+  }, [])//useFocus useCallback
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {

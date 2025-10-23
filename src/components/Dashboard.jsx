@@ -1,8 +1,15 @@
 import { Calendar, Users, Clock, CheckCircle } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import nextDoc from '../assets/nextDoc.png'
+import { makeAuthenticatedRequest } from '../utils/util';
 
 const Dashboard = () => {
+  
+  const returnCount = async() =>{
+    const response = await makeAuthenticatedRequest("countNumber","doc","doctor");
+    const data = response
+    
+  }
   const [stats, setStats] = useState({
     totalAppointments: 0,
     upcomingAppointments: 0,
@@ -90,7 +97,7 @@ const Dashboard = () => {
             Virtual Health Platform
           </p>
           <p className="text-lg opacity-95">
-            Ready to book your appointment, {user.lastName}?
+            Ready to book your appointment with the top doctors in the country, {user.lastName}?
           </p>
         </div>
       </div>

@@ -6,15 +6,15 @@ import { Toaster } from 'sonner';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Doctors from './components/Doctors';
+import Appointment from './components/Appointments';
 
 function App() {
   return (
     <Router>
       <Toaster />
       <Routes>
-        <Route path='/' element={<Login />} />
+        <Route path='/' element={<Login/>} />
         <Route path='/signup' element={<Signup />} />
-        <Route path = 'doctors' element ={<Doctors/>} />
 
         <Route path ="/layout" element ={
           <ProtectedRoute>
@@ -24,6 +24,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path = 'doctors' element ={<Doctors/>} />
+            <Route path = 'appointments' element ={<Appointment/>}/>
 
 
 
