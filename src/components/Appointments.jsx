@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { Edit2, Trash2, Calendar, Clock, User, FileText } from 'lucide-react';
 import { makeAuthenticatedRequest, showToast } from "../utils/util";
 import Delete from '../models/Delete';
+import BookAppointmentModal from '../models/Appointment';
 
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDelete, setDeleteModal] = useState(false)
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null); 
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [isAppointmentModalOpen, setAppointmentModalOpen] = useState(false)
+  const [selectedAppointment, setSelectedAppointment] = useState(null)
 
   useEffect(() => {
     displayAppointments();
@@ -20,10 +23,10 @@ const Appointment = () => {
       const user = JSON.parse(storedUser);
       const patientId = user.id;
       const id = { "patientId": patientId };
-      
+
       const response = await makeAuthenticatedRequest("displayPatientAppointments", "appointment", id);
       console.log(response)
-      
+
       if (response?.returnCode === 0) {
         setAppointments(response.returnObject || []);
       } else {
@@ -120,59 +123,63 @@ const Appointment = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {appointments.map((appointment) => (
-                  <tr key={appointment.id} className="hover:bg-white/5 transition-colors">
+                {appointments.map((data) => (
+                  <tr key={data.appointment.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-white">
                         <User className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm font-medium">{appointment.patientName}</span>
+                        <span className="text-sm font-medium">{data.appointment.patientName}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-300">{appointment.doctorName}</div>
+                      <div className="text-sm text-gray-300">{data.appointment.doctorName}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2 text-white text-sm">
                           <Calendar className="w-4 h-4 text-blue-400" />
-                          <span>{formatDate(appointment.scheduledDate)}</span>
+                          <span>{formatDate(data.appointment.scheduledDate)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-gray-400 text-xs">
                           <Clock className="w-4 h-4" />
-                          <span>{(appointment.scheduledTime)}</span>
+                          <span>{(data.appointment.scheduledTime)}</span>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-start gap-2 text-sm text-gray-300 max-w-xs">
                         <FileText className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                        <span className="line-clamp-2">{appointment.description}</span>
+                        <span className="line-clamp-2">{data.appointment.description}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(appointment.status)}`}>
-                        {appointment.status}
+                      <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(data.appointment.status)}`}>
+                        {data.appointment.status}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <button
+                        onClick ={() =>{
+                          setAppointmentModalOpen(true)
+                          setSelectedAppointment(data)
+                        }}
                           className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
-                        onClick={() => {
-                          setSelectedAppointmentId(appointment.id); 
-                          setDeleteModal(true);
-                        }}
+                          onClick={() => {
+                            setSelectedAppointmentId(data.appointment.id);
+                            setDeleteModal(true);
+                          }}
 
                           className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Delete"
                         >
-                          <Trash2 
-                          className="w-4 h-4" />
+                          <Trash2
+                            className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -187,8 +194,20 @@ const Appointment = () => {
         isOpen={isDelete}
         onClose={() => setDeleteModal(false)}
         appointmentId={selectedAppointmentId}
-        onDeleteSuccess={displayAppointments} 
+        onDeleteSuccess={displayAppointments}
       />
+
+      <BookAppointmentModal
+        isOpen={isAppointmentModalOpen}
+        onClose={() => setAppointmentModalOpen(false)}
+        appointment = {selectedAppointment}
+        updateTitle={`Updating appointment with ${selectedAppointment?.appointment?.doctorName}`}
+        buttonTitle = {"update Appointment"}
+        onSuccess={displayAppointments} 
+
+
+      />
+
     </div>
   );
 };

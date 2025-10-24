@@ -6,7 +6,7 @@ import BookAppointmentModal from "../models/Appointment"
 
 const Doctors = () => {
     const [doctors, setDoctors] = useState([])
-    const [selectedDoctor, setSelectedDoctor] = useState(null)
+    const [selectedDoctor, setSelectedDoctor] = useState(doctors[0])
     const [selectedSpecialty, setSelectedSpecialty] = useState('All')
     const [filteredDoctors, setFilteredDoctors] = useState([])
     const [loading, setLoading] = useState(true)
@@ -40,6 +40,7 @@ const Doctors = () => {
             console.log("this is the doctor list")
             console.log(doctorsList)
             setDoctors(doctorsList)
+
 
             if (doctorsList.length > 0) {
                 setSelectedDoctor(doctorsList[0])
@@ -184,10 +185,14 @@ const Doctors = () => {
                     )}
                 </div>
             )
-            }<BookAppointmentModal
+            }
+            <BookAppointmentModal
             isOpen={isAppointmentModalOpen}
             onClose = {() => setAppointmentModal(false)}
             doctor = {selectedDoctor}
+            updateTitle={`Booking with ${selectedDoctor?.name || " "}`}
+            buttonTitle = "Book Appointment"
+            
            // DoctorName = {selectedDoctor}
             
             />

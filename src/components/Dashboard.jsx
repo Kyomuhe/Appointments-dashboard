@@ -2,9 +2,12 @@ import { Calendar, Users, Clock, CheckCircle } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import nextDoc from '../assets/nextDoc.png'
 import { makeAuthenticatedRequest, showToast } from '../utils/util';
+import { useNavigate } from 'react-router-dom';
+
 
 const Dashboard = () => {
-  const [generalCount, setGeneralCount] =useState()
+  const navigate = useNavigate
+  const [generalCount, setGeneralCount] = useState()
   const [stats, setStats] = useState({
     totalAppointments: 0,
     pendingAppointments: 0,
@@ -13,31 +16,10 @@ const Dashboard = () => {
   });
 
   const [recentAppointments, setRecentAppointments] = useState([]);
-  
+
   const user = useMemo(() => {
-      return JSON.parse(localStorage.getItem('user'));
-    }, [])
-
-  const returnCount = async() =>{
-    try{
-    const patientId = {"patientId": user.id}
-    const response = await makeAuthenticatedRequest("returnGeneralCount","doc", patientId);
-    const data = response
-    if(data?.returnCode !==0){
-      showToast(data?.returnMessage, "error")
-      console.log(data?.returnMessage)
-    }
-    const count = data?.returnObject || []
-    console.log(generalCount)
-    console.log(data)
-    setGeneralCount(count)
-    }catch(error){
-      console.error(error)
-      showToast("falied retrieving count", "error")
-
-    }
-    
-  }
+    return JSON.parse(localStorage.getItem('user'));
+  }, [])
 
   useEffect(() => {
     if (generalCount) {
@@ -57,11 +39,48 @@ const Dashboard = () => {
   }, []);
 
 
-  const fetchDashboardData =  async() => {
-    const patientId = {"patientId":user.id}
-      const response = await makeAuthenticatedRequest("displayPatientAppointments", "appointment",patientId)
-      console.log("this is the recent appintment")
-      console.log(response)
+  const returnCount = async () => {
+    try {
+      if (!user) {
+        showToast("user data seems to be tampered with", "error")
+        navigate("/")
+        return;
+
+      }
+      const patientData = { "patientId": user.id }
+      const response = await makeAuthenticatedRequest("returnGeneralCount", "doc", patientData);
+      const data = response
+      if (data?.returnCode !== 0) {
+        showToast(data?.returnMessage, "error")
+        console.log(data?.returnMessage)
+        return;
+      }
+      const count = data?.returnObject || []
+      // console.log(generalCount)
+      // console.log(data)
+      setGeneralCount(count)
+    } catch (error) {
+      console.error(error)
+      showToast(error.message, "error")
+
+    }
+
+  }
+
+
+
+  const fetchDashboardData = async () => {
+    try {
+      if (!user) {
+        showToast("user data seems to be tampered with", "error")
+        navigate("/")
+        return;
+
+      }
+      const patientId = { "patientId": user.id }
+      const response = await makeAuthenticatedRequest("displayPatientAppointments", "appointment", patientId)
+      // console.log("this is the recent appintment")
+      // console.log(response)
 
       const patientAppointments = response?.returnObject || []
       patientAppointments.reverse();
@@ -69,6 +88,12 @@ const Dashboard = () => {
       const newAppointments = patientAppointments.slice(0, 3)
 
       setRecentAppointments(newAppointments)
+      console.log("these are the recent appointment")
+      console.log(newAppointments)
+    } catch (error) {
+      console.error(error)
+      showToast(error.message, "error")
+    }
   };
 
   const StatCard = ({ icon: Icon, title, value, color }) => (
@@ -88,28 +113,28 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-<div className="bg-blue-500 py-16 px-8 rounded">
-  <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
-    <div className="flex-shrink-0">
-      <img 
-        src={nextDoc} 
-        alt="Doctor with telemedicine screen" 
-        className="w-80 h-auto"
-      />
-    </div>
+      <div className="bg-blue-500 py-16 px-8 rounded">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
+          <div className="flex-shrink-0">
+            <img
+              src={nextDoc}
+              alt="Doctor with telemedicine screen"
+              className="w-80 h-auto"
+            />
+          </div>
 
-    <div className="text-white text-center md:text-left">
-      <p className="text-3xl font-semibold mb-4">
-        Leading High Quality<br />
-        Virtual Health Platform
-      </p>
-      <p className="text-lg opacity-95">
-        Ready to book your appointment with the top doctors in the country, {user.lastName}?
-      </p>
-    </div>
-  </div>
-</div>      
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="text-white text-center md:text-left">
+            <p className="text-3xl font-semibold mb-4">
+              Leading High Quality<br />
+              Virtual Health Platform
+            </p>
+            <p className="text-lg opacity-95">
+              Ready to book your appointment with the top doctors in the country, {user.lastName}?
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           icon={Calendar}
           title="Total Appointments"
@@ -138,7 +163,7 @@ const Dashboard = () => {
 
       <div className="bg-gradient-to-br from-[#1A2234]/80 to-[#0F1419]/80 border border-white/10 rounded-lg p-6">
         <h2 className="text-xl font-bold text-white mb-4">Recent Appointments</h2>
-        
+
         {recentAppointments.length === 0 ? (
           <div className="text-center py-12">
             <Calendar className="w-12 h-12 text-gray-500 mx-auto mb-3" />
@@ -157,15 +182,15 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentAppointments.map((appointment) => (
-                  <tr key={appointment.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                    <td className="py-3 px-4 text-sm text-white">{appointment.doctorName}</td>
-                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.description}</td>
-                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.scheduledDate}</td>
-                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.scheduledTime}</td>
+                {recentAppointments.map((data) => (
+                  <tr key={data.appointment.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="py-3 px-4 text-sm text-white">{data.appointment.doctorName}</td>
+                    <td className="py-3 px-4 text-sm text-gray-400">{data.appointment.description}</td>
+                    <td className="py-3 px-4 text-sm text-gray-400">{data.appointment.scheduledDate}</td>
+                    <td className="py-3 px-4 text-sm text-gray-400">{data.appointment.scheduledTime}</td>
                     <td className="py-3 px-4 text-sm">
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
-                        {appointment.status}
+                        {data.appointment.status}
                       </span>
                     </td>
                   </tr>

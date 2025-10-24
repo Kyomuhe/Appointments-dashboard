@@ -2,25 +2,23 @@ import { useState, useMemo } from 'react';
 import { X, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { makeAuthenticatedRequest, showToast } from '../utils/util';
 
-const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
+const BookAppointmentModal = ({ isOpen, onClose, doctor, appointment, updateTitle, buttonTitle ,onSuccess}) => {
+  console.log(doctor)
   const [selectedTime, setSelectedTime] = useState();
   const [selectedDate, setSelectedDate] = useState(null);
   const [description, setDescription] = useState('');
   const [currentDate, setCurrentDate] = useState(new Date());
   const user = useMemo(
-    () =>{
+    () => {
       return JSON.parse(localStorage.getItem('user'))
-    },[]
+    }, []
   )
 
   if (!isOpen) return null;
-  //console.log("trying to test time ranges")
-  //console.log(JSON.stringify(timeRanges))
-  //console.log(DoctorName)
   const selectedDoctorId = doctor?.id
-  const selectedDoctorName =doctor?.name
-  const timeRanges = doctor?.timeRanges
-  const timeSlots = timeRanges.split(',').map(slot => slot.trim())
+  const selectedDoctorName = doctor?.name
+  const timeRanges = appointment ? [] : doctor?.timeRanges
+  const timeSlots = appointment ? appointment.timeRanges.split(',').map(slot => slot.trim()) : timeRanges.split(',').map(slot => slot.trim())
   //console.log(timeSlots)
 
   // const timeSlots = [
@@ -29,9 +27,9 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
   //   '03:00 pm - 04:00 pm'
   // ];
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                      'July', 'August', 'September', 'October', 'November', 'December'];
-  
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const getDaysInMonth = (date) => {
@@ -39,7 +37,7 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
+
     const days = [];
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
@@ -60,55 +58,92 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
   };
 
-  const makingAppointment = async()=>{
-    try{
+  const makingAppointment = async () => {
+    try {
       if (!selectedDate) {
         showToast("Please select a date", "error");
         return;
       }
-    if (!selectedTime) {
-      showToast("Please select a time slot", "error");
-      return;
-    }
+      if (!selectedTime) {
+        showToast("Please select a time slot", "error");
+        return;
+      }
 
+      const doctorName = selectedDoctorName
+      const doctorId = selectedDoctorId
+      const patientName = user.lastName + ' ' + user.firstName
+      const patientId = user.id
+      const timeRange = selectedTime
+      const notes = description
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate).padStart(2, '0');
+      const scheduledDate = `${year}-${month}-${day}`;
+      const data = { doctorName, doctorId, patientName, timeRange, notes, scheduledDate, patientId }
+      console.log(data)
 
-    const doctorName =selectedDoctorName
-    const doctorId = selectedDoctorId
-    const patientName = user.lastName + ' ' + user.firstName
-    const patientId = user.id
-    const timeRange = selectedTime
-    const notes = description
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(selectedDate).padStart(2, '0');
-    const scheduledDate = `${year}-${month}-${day}`;
-    const data ={doctorName, doctorId, patientName, timeRange, notes, scheduledDate, patientId}
-    console.log(data)
-
-    const response = await makeAuthenticatedRequest("makeAppointment", "appointment",data)
-    console.log(response)
-    if(response?.returnCode !== 0){
-      const errorMessage = response?.returnMessage || "oops failed to make appointment"
-      showToast(errorMessage, "error")
-      return;
-    }
-    showToast ('booked successfully', 'success');
-    onClose()
-    }catch(error){
+      const response = await makeAuthenticatedRequest("makeAppointment", "appointment", data)
+      console.log(response)
+      if (response?.returnCode !== 0) {
+        const errorMessage = response?.returnMessage || "oops failed to make appointment"
+        showToast(errorMessage, "error")
+        return;
+      }
+      showToast('booked successfully', 'success');
+      onClose()
+    } catch (error) {
       showToast("oops some thing unexpected happend", "error")
       console.log(error)
 
+    }
+  }
+  const updateAppointment = async () => {
+    try {
+      if (!selectedDate) {
+        showToast("Please select a date", "error");
+        return;
+      }
+      if (!selectedTime) {
+        showToast("Please select a time slot", "error");
+        return;
+      }
+
+      const appointmentId = appointment?.appointment?.id
+      const timeRange = selectedTime
+      const notes = description
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate).padStart(2, '0');
+      const scheduledDate = `${year}-${month}-${day}`;
+      const data = { timeRange, notes, scheduledDate, appointmentId }
+      console.log("sending updated data")
+      console.log(data)
+      console.log(appointment)
+
+      const response = await makeAuthenticatedRequest("updateAppointment", "appointment", data)
+      if (response?.returnCode !== 0) {
+        const errorMessage = response?.returnMessage || "oops failed to make appointment"
+        showToast(errorMessage, "error")
+        return;
+
+      }
+      showToast("updated successfully", "success")
+      onSuccess?.();
+      onClose()
+    } catch (error) {
+      showToast("ooops something unexpected happened", "error")
+      console.log(error)
     }
   }
 
   return (
     <>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fadeIn" onClick={onClose} />
-      
+
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div className="relative bg-gradient-to-br from-[#1A2234] to-[#0F1419] rounded-xl shadow-2xl w-full max-w-3xl border border-white/10 pointer-events-auto animate-scaleIn">
           <div className="bg-gradient-to-r from-[#1A2234] to-[#0F1419] px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Booking with Doctor {selectedDoctorName}</h2>
+            <h2 className="text-xl font-bold text-white">{updateTitle}</h2>
             <button
               onClick={onClose}
               className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
@@ -147,17 +182,17 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
                     </label>
                   ))}
                 </div>
-                
+
                 <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-300 mb-2">Notes (Optional)</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add any additional notes or symptoms..."
-                rows="3"
-                className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
-              />
-            </div>
+                  <label className="block text-xs font-medium text-gray-300 mb-2">Notes (Optional)</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Add any additional notes or symptoms..."
+                    rows="3"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
+                  />
+                </div>
 
               </div>
 
@@ -165,7 +200,7 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-medium text-gray-300">Select Date</label>
                   <div className="flex items-center gap-2">
-                    <button 
+                    <button
                       onClick={goToPreviousMonth}
                       className="p-1 hover:bg-white/10 rounded transition-colors"
                     >
@@ -177,7 +212,7 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
                         {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                       </span>
                     </div>
-                    <button 
+                    <button
                       onClick={goToNextMonth}
                       className="p-1 hover:bg-white/10 rounded transition-colors"
                     >
@@ -201,13 +236,12 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
                         key={index}
                         disabled={!day}
                         onClick={() => setSelectedDate(day)}
-                        className={`aspect-square flex items-center justify-center rounded text-xs transition-all ${
-                          !day
-                            ? 'invisible'
-                            : selectedDate === day
+                        className={`aspect-square flex items-center justify-center rounded text-xs transition-all ${!day
+                          ? 'invisible'
+                          : selectedDate === day
                             ? 'bg-cyan-500 text-white font-bold'
                             : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                        }`}
+                          }`}
                       >
                         {day}
                       </button>
@@ -218,10 +252,10 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
             </div>
 
 
-            <button 
-            onClick={() => makingAppointment()}
-            className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all text-sm">
-              Book Appointment
+            <button
+              onClick={() => appointment ? updateAppointment() : makingAppointment()}
+              className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all text-sm">
+              {buttonTitle}
             </button>
           </div>
         </div>
@@ -244,3 +278,11 @@ const BookAppointmentModal = ({ isOpen, onClose, doctor}) => {
 };
 
 export default BookAppointmentModal;
+
+
+// {
+//   "doctor": {
+//     "name": "steven",
+//     "timeSlots": []
+//   }
+// }
