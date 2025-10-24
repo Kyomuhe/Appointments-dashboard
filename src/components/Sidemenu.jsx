@@ -28,7 +28,8 @@ const Sidemenu = () => {
   const activeItem = getActiveItem()
 
   return (
-    <div className={`h-screen rounded-xl flex flex-col text-white bg-[#101828] transition-all duration-300 ${
+    <>
+    <div className={`hidden md:flex h-screen rounded-xl flex flex-col text-white bg-[#101828] transition-all duration-300 ${
       isCollapsed ? 'w-20' : 'w-64'
     }`}>
       <div className='flex items-center justify-between p-6 pb-8 gap-3'>
@@ -81,6 +82,29 @@ const Sidemenu = () => {
         </div>
       )}
     </div>
+          <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
+        <div className="bg-gradient-to-br from-[#0F1419]/95 to-[#1A2234]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl px-3 py-2 flex items-center justify-between">
+          {menuItems.map(item => {
+            const Icon = item.icon
+            const isActive = activeItem === item.id
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleMenuClick(item.path)}
+                className={`flex-1 flex flex-col items-center justify-center p-2 ${
+                  isActive ? 'text-blue-500' : 'text-gray-300'
+                }`}
+                aria-label={item.name}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-xs mt-1 truncate">{item.name}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+      </>
+    
   )
 }
 

@@ -1,67 +1,74 @@
 import { Calendar, Users, Clock, CheckCircle } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import nextDoc from '../assets/nextDoc.png'
-import { makeAuthenticatedRequest } from '../utils/util';
+import { makeAuthenticatedRequest, showToast } from '../utils/util';
 
 const Dashboard = () => {
-  
-  const returnCount = async() =>{
-    const response = await makeAuthenticatedRequest("countNumber","doc","doctor");
-    const data = response
-    
-  }
+  const [generalCount, setGeneralCount] =useState()
   const [stats, setStats] = useState({
     totalAppointments: 0,
-    upcomingAppointments: 0,
+    pendingAppointments: 0,
     completedAppointments: 0,
     availableDoctors: 0
   });
+
   const [recentAppointments, setRecentAppointments] = useState([]);
+  
   const user = useMemo(() => {
       return JSON.parse(localStorage.getItem('user'));
     }, [])
-  
+
+  const returnCount = async() =>{
+    try{
+    const patientId = {"patientId": user.id}
+    const response = await makeAuthenticatedRequest("returnGeneralCount","doc", patientId);
+    const data = response
+    if(data?.returnCode !==0){
+      showToast(data?.returnMessage, "error")
+      console.log(data?.returnMessage)
+    }
+    const count = data?.returnObject || []
+    console.log(generalCount)
+    console.log(data)
+    setGeneralCount(count)
+    }catch(error){
+      console.error(error)
+      showToast("falied retrieving count", "error")
+
+    }
+    
+  }
+
+  useEffect(() => {
+    if (generalCount) {
+      setStats({
+        totalAppointments: generalCount.appointmentCount || 0,
+        pendingAppointments: generalCount.appointmentCount || 0,
+        completedAppointments: 0,
+        availableDoctors: generalCount.doctorCount || 0
+      });
+    }
+  }, [generalCount]);
+
 
   useEffect(() => {
     fetchDashboardData();
+    returnCount();
   }, []);
 
-  const fetchDashboardData =  () => {
-      
-      setStats({
-        totalAppointments: 12,
-        upcomingAppointments: 3,
-        completedAppointments: 9,
-        availableDoctors: 15
-      });
 
-      setRecentAppointments([
-        {
-          id: 1,
-          doctorName: 'Dr. John Smith',
-          specialty: 'Cardiologist',
-          date: '2025-10-20',
-          time: '10:00 AM',
-          status: 'Scheduled'
-        },
-        {
-          id: 2,
-          doctorName: 'Dr. Sarah Johnson',
-          specialty: 'Dermatologist',
-          date: '2025-10-22',
-          time: '02:00 PM',
-          status: 'Scheduled'
-        },
-        {
-          id: 3,
-          doctorName: 'Dr. Mike Wilson',
-          specialty: 'General Practitioner',
-          date: '2025-10-25',
-          time: '11:30 AM',
-          status: 'Confirmed'
-        }
-      ]);
+  const fetchDashboardData =  async() => {
+    const patientId = {"patientId":user.id}
+      const response = await makeAuthenticatedRequest("displayPatientAppointments", "appointment",patientId)
+      console.log("this is the recent appintment")
+      console.log(response)
 
+      const patientAppointments = response?.returnObject || []
+      patientAppointments.reverse();
+
+      const newAppointments = patientAppointments.slice(0, 3)
+
+      setRecentAppointments(newAppointments)
   };
 
   const StatCard = ({ icon: Icon, title, value, color }) => (
@@ -81,28 +88,28 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-    <div className="bg-blue-500 py-16 px-8 rounded">
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-12">
-        <div className="flex-shrink-0">
-          <img 
-            src={nextDoc} 
-            alt="Doctor with telemedicine screen" 
-            className="w-80 h-auto"
-          />
-        </div>
-
-        <div className="text-white">
-          <p className="text-3xl font-semibold mb-4">
-            Leading High Quality<br />
-            Virtual Health Platform
-          </p>
-          <p className="text-lg opacity-95">
-            Ready to book your appointment with the top doctors in the country, {user.lastName}?
-          </p>
-        </div>
-      </div>
+<div className="bg-blue-500 py-16 px-8 rounded">
+  <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
+    <div className="flex-shrink-0">
+      <img 
+        src={nextDoc} 
+        alt="Doctor with telemedicine screen" 
+        className="w-80 h-auto"
+      />
     </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    <div className="text-white text-center md:text-left">
+      <p className="text-3xl font-semibold mb-4">
+        Leading High Quality<br />
+        Virtual Health Platform
+      </p>
+      <p className="text-lg opacity-95">
+        Ready to book your appointment with the top doctors in the country, {user.lastName}?
+      </p>
+    </div>
+  </div>
+</div>      
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           icon={Calendar}
           title="Total Appointments"
@@ -111,8 +118,8 @@ const Dashboard = () => {
         />
         <StatCard
           icon={Clock}
-          title="Upcoming"
-          value={stats.upcomingAppointments}
+          title="pending"
+          value={stats.pendingAppointments}
           color="bg-yellow-500/20"
         />
         <StatCard
@@ -153,9 +160,9 @@ const Dashboard = () => {
                 {recentAppointments.map((appointment) => (
                   <tr key={appointment.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                     <td className="py-3 px-4 text-sm text-white">{appointment.doctorName}</td>
-                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.specialty}</td>
-                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.date}</td>
-                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.time}</td>
+                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.description}</td>
+                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.scheduledDate}</td>
+                    <td className="py-3 px-4 text-sm text-gray-400">{appointment.scheduledTime}</td>
                     <td className="py-3 px-4 text-sm">
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
                         {appointment.status}
