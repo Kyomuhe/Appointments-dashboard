@@ -175,7 +175,6 @@ const Dashboard = () => {
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Doctor</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Specialty</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Date</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Time</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Status</th>
@@ -185,7 +184,6 @@ const Dashboard = () => {
                 {recentAppointments.map((data) => (
                   <tr key={data.appointment.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                     <td className="py-3 px-4 text-sm text-white">{data.appointment.doctorName}</td>
-                    <td className="py-3 px-4 text-sm text-gray-400">{data.appointment.description}</td>
                     <td className="py-3 px-4 text-sm text-gray-400">{data.appointment.scheduledDate}</td>
                     <td className="py-3 px-4 text-sm text-gray-400">{data.appointment.scheduledTime}</td>
                     <td className="py-3 px-4 text-sm">

@@ -102,13 +102,13 @@ const Appointment = () => {
             <table className="w-full">
               <thead className="bg-[#0F1419]/50 border-b border-white/10">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                  <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                     Patient
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                     Doctor
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                  <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                     Date & Time
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
@@ -125,7 +125,7 @@ const Appointment = () => {
               <tbody className="divide-y divide-white/5">
                 {appointments.map((data) => (
                   <tr key={data.appointment.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4">
+                    <td className="hidden md:table-cell px-6 py-4">
                       <div className="flex items-center gap-2 text-white">
                         <User className="w-4 h-4 text-gray-400" />
                         <span className="text-sm font-medium">{data.appointment.patientName}</span>
@@ -146,7 +146,7 @@ const Appointment = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="hidden md:table-cell px-6 py-4">
                       <div className="flex items-start gap-2 text-sm text-gray-300 max-w-xs">
                         <FileText className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                         <span className="line-clamp-2">{data.appointment.description}</span>
@@ -160,10 +160,10 @@ const Appointment = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                        onClick ={() =>{
-                          setAppointmentModalOpen(true)
-                          setSelectedAppointment(data)
-                        }}
+                          onClick={() => {
+                            setAppointmentModalOpen(true)
+                            setSelectedAppointment(data)
+                          }}
                           className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-colors"
                           title="Edit"
                         >
@@ -200,10 +200,10 @@ const Appointment = () => {
       <BookAppointmentModal
         isOpen={isAppointmentModalOpen}
         onClose={() => setAppointmentModalOpen(false)}
-        appointment = {selectedAppointment}
+        appointment={selectedAppointment}
         updateTitle={`Updating appointment with ${selectedAppointment?.appointment?.doctorName}`}
-        buttonTitle = {"update Appointment"}
-        onSuccess={displayAppointments} 
+        buttonTitle={"update Appointment"}
+        onSuccess={displayAppointments}
 
 
       />

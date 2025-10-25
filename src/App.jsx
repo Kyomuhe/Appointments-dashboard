@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Doctors from './components/Doctors';
 import Appointment from './components/Appointments';
+import AppointmentCalendar from './components/Calender';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path = 'doctors' element ={<Doctors/>} />
             <Route path = 'appointments' element ={<Appointment/>}/>
+            <Route path = 'calendar' element = {<AppointmentCalendar/>}/>
 
 
 
