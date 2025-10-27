@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import moment from 'moment'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
-import { makeAuthenticatedRequest } from '../utils/util'
+import { makeAuthenticatedRequest, showToast } from '../utils/util'
 
 const MyCalendar = () => {
     const [appointments, setAppointments] = useState([])
@@ -21,6 +21,12 @@ const MyCalendar = () => {
             console.log(patientData)
             const response = await makeAuthenticatedRequest("displayPatientAppointments", "appointment", patientData);
             console.log(response)
+            if (response?.returnCode !== 0) {
+                console.log(response?.returnMessage)
+                showToast(response?.returnMessage, "error")
+                return;
+            }
+
             const userAppointments = response?.returnObject || []
             setAppointments(userAppointments)
         } catch (error) {

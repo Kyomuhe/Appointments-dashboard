@@ -2,24 +2,15 @@ import { Bell, Search } from "lucide-react"
 import avatar from '../assets/default.png'
 import { useState, useEffect, useMemo } from 'react'
 import ProfileModal from "../models/Profile"
+import { useGreeting } from "../hooks/useGreeting"
 
 const Header = () => {
-  const [greeting, setGreeting] = useState('')
+  const greeting = useGreeting()
   const user = useMemo(() => {
     return JSON.parse(localStorage.getItem('user'));
-  }, [])//useFocus useCallback
+  }, []) //useFocus useCallback
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  useEffect(() => {
-    const hour = new Date().getHours()
-    if (hour < 12) {
-      setGreeting('Good Morning')
-    } else if (hour < 18) {
-      setGreeting('Good Afternoon')
-    } else {
-      setGreeting('Good Evening')
-    }
-  }, [])
 
   return (
     <div className="w-full h-20  flex items-center md:justify-between justify-center px-4 md:px-8 text-white">

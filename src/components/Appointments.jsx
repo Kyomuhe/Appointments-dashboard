@@ -114,7 +114,7 @@ const Appointment = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                     Description
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                  <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-300 uppercase tracking-wider">
@@ -152,8 +152,8 @@ const Appointment = () => {
                         <span className="line-clamp-2">{data.appointment.description}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(data.appointment.status)}`}>
+                    <td className="hidden md:table-cell px-6 py-4">
+                      <span className={` inline-flex px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(data.appointment.status)}`}>
                         {data.appointment.status}
                       </span>
                     </td>
