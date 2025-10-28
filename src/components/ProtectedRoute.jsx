@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/" replace />;
   }
   const render =() =>{
-  if(<Navigate to ="/"/>){
+  if(token && <Navigate to ="/"/>){
     return navigate("/layout");
 
 

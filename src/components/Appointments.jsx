@@ -27,11 +27,19 @@ const Appointment = () => {
       const response = await makeAuthenticatedRequest("displayPatientAppointments", "appointment", id);
       console.log(response)
 
-      if (response?.returnCode === 0) {
-        setAppointments(response.returnObject || []);
-      } else {
-        showToast(response?.returnMessage || 'Failed to load appointments', 'error');
+      if(response?.returnCode !== 0){
+        showToast(response?.returnMessage, "error")
+        return;
       }
+      setAppointments(response.returnObject.reverse() || []);
+
+
+
+      // if (response?.returnCode === 0) {
+        
+      // } else {
+      //   showToast(response?.returnMessage || 'Failed to load appointments', 'error');
+      // }
     } catch (error) {
       console.error('Error loading appointments:', error);
       showToast('Failed to load appointments', 'error');
@@ -97,7 +105,7 @@ const Appointment = () => {
           </p>
         </div>
       ) : (
-        <div className="bg-[#1A2234]/50 rounded-lg border border-white/10 overflow-hidden">
+        <div className="bg-[#1A2234]/50 rounded-lg border border-white/10 overflow-y-auto">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-[#0F1419]/50 border-b border-white/10">
