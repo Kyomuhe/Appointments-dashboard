@@ -19,7 +19,7 @@ const Header = () => {
 
 
   return (
-    <div className="w-full h-20  flex items-center md:justify-between justify-center px-4 md:px-8 text-white">
+    <div className="w-full h-20  flex items-center md:justify-between justify-center px-4 md:px-8 dark:text-white">
       <div className="flex flex-col">
         <h1 className="hidden md:flex text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent object-contain">
           {greeting}
@@ -27,7 +27,7 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-8">
-        <div className="hidden md:flex items-center gap-3 bg-white/5 rounded-lg px-4 py-2.5 hover:bg-white/10 transition-colors">
+        <div className="hidden md:flex items-center gap-3 bg-white dark:bg-white/5 rounded-lg px-4 py-2.5 dark:hover:bg-white/10 transition-colors">
           <Search className="w-4 h-4 text-gray-400" />
           <input 
             type="text" 

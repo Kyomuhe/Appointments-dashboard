@@ -66,7 +66,7 @@ const Appointment = () => {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'pending':
-        return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+        return 'bg-yellow-500 text-yellow-300 border-yellow-500 dark:bg-yellow-500/20 dark:text-yellow-300 dark:border-yellow-500/30';
       case 'confirmed':
         return 'bg-green-500/20 text-green-300 border-green-500/30';
       case 'completed':
@@ -105,10 +105,10 @@ const Appointment = () => {
           </p>
         </div>
       ) : (
-        <div className="bg-[#1A2234]/50 rounded-lg border border-white/10 overflow-y-auto">
+        <div className="bg-white dark:bg-[#1A2234]/50 rounded-lg border border-white/10 overflow-y-auto">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#0F1419]/50 border-b border-white/10">
+              <thead className="bg-blue-500 dark:bg-[#0F1419]/50 border-b border-white/10">
                 <tr>
                   <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                     Patient
@@ -130,23 +130,23 @@ const Appointment = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-gray-200 dark:divide-white/5">
                 {appointments.map((data) => (
                   <tr key={data.appointment.id} className="hover:bg-white/5 transition-colors">
                     <td className="hidden md:table-cell px-6 py-4">
                       <div className="flex items-center gap-2 text-white">
-                        <User className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm font-medium">{data.appointment.patientName}</span>
+                        <User className="w-4 h-4 text-gray-900 dark:text-gray-400" />
+                        <span className="text-sm text-gray-500 dark:text-gray-300 font-medium">{data.appointment.patientName}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-300">{data.appointment.doctorName}</div>
+                      <div className="text-sm text-gray-700 dark:text-gray-300">{data.appointment.doctorName}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2 text-white text-sm">
-                          <Calendar className="w-4 h-4 text-blue-400" />
-                          <span>{formatDate(data.appointment.scheduledDate)}</span>
+                          <Calendar className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+                          <span className='text-gray-700 dark:text-gray-300'>{formatDate(data.appointment.scheduledDate)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-gray-400 text-xs">
                           <Clock className="w-4 h-4" />
@@ -156,8 +156,8 @@ const Appointment = () => {
                     </td>
                     <td className="hidden md:table-cell px-6 py-4">
                       <div className="flex items-start gap-2 text-sm text-gray-300 max-w-xs">
-                        <FileText className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                        <span className="line-clamp-2">{data.appointment.description}</span>
+                        <FileText className="w-4 h-4 text-gray-800 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                        <span className="line-clamp-2 text-gray-700 dark:text-gray-300">{data.appointment.description}</span>
                       </div>
                     </td>
                     <td className="hidden md:table-cell px-6 py-4">

@@ -1,19 +1,34 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { LayoutGrid, Calendar, Stethoscope, ChevronsLeft, Users } from 'lucide-react'
 import logo from '../assets/logo.png'
 
 const Sidemenu = () => {
+    const user = useMemo(() => {
+      return JSON.parse(localStorage.getItem('user'));
+    }, [])
+  
   const [isCollapsed, setIsCollapsed] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
-  const menuItems = [
+  const allMenuItems = [
     { icon: LayoutGrid, name: 'Dashboard', id: 'dashboard', path: '/layout/dashboard' },
     { icon: Calendar, name: 'Appointments', id: 'appointments', path:'/layout/appointments'},
     { icon: Users, name: 'Doctors', id: 'doctors', path: '/layout/doctors' },
     { icon: Calendar, name: 'My Calendar', id: 'calendar', path: '/layout/calendar'},
+    { icon: Users, name: 'Users', id: 'users', path: '/layout/users', requiresAdmin: true  },
+
   ]
+
+  const menuItems = useMemo(()=>{
+    return allMenuItems.filter(item =>{
+      if(item.requiresAdmin){
+        return user?.roleCode ==='ADMINISTRATOR'
+      }
+      return true
+    })
+  }, [user])
 
   const getActiveItem = () => {
     const currentPath = location.pathname
@@ -29,7 +44,7 @@ const Sidemenu = () => {
 
   return (
     <>
-    <div className={`hidden md:flex h-screen rounded-xl flex flex-col text-white bg-[#101828] transition-all duration-300 ${
+    <div className={`hidden md:flex h-screen rounded-xl flex flex-col bg-white text-blue-500 dark:text-white dark:bg-[#101828]  transition-all duration-300 ${
       isCollapsed ? 'w-20' : 'w-64'
     }`}>
       <div className='flex items-center justify-between p-6 pb-8 gap-3'>

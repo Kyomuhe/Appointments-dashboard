@@ -65,11 +65,11 @@ const Login = () => {
   });
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-[#101828] text-white px-4">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-sky-50 dark:bg-[#101828] text-black dark:text-white px-4">
       <img src={logo} alt="Logo" className="w-50 h-16 mb-8" />
 
-      <div className="w-full max-w-md border border-white/30 shadow-lg rounded-xl p-8 bg-[#1A2234]/70 backdrop-blur-sm">
-        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+      <div className="w-full max-w-md border border-gray-300 dark:border-white/30 bg-white shadow-lg rounded-xl p-8 bg:sky-500 dark:bg-[#1A2234]/70 backdrop-blur-sm">
+        {/* <h2 className="text-2xl font-semibold text-center dark:text-black text-blue-500 mb-6">Login</h2> */}
 
         <form onSubmit={formik.handleSubmit} className="space-y-5">
           <div>
@@ -129,12 +129,12 @@ const Login = () => {
           <div className="flex-1 h-px bg-gray-500"></div>
         </div>
 
-        <p className="text-center text-sm text-gray-300">
+        <p className="text-center text-sm dark:text-gray-300">
           Don’t have an account?{' '}
         <div>
         <a 
         onClick={()=>{navigate("/signup")}}
-        className="text-blue-400 hover:underline cursor-pointer">
+        className="dark:text-blue-400 text-blue-500 hover:underline cursor-pointer">
             Create one
           </a>
           </div>

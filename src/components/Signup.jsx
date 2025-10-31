@@ -94,10 +94,10 @@ const Signup = () => {
   });
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-[#101828] text-white px-4">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-sky-50 dark:bg-[#101828] dark:text-white px-4">
       <img src={logo} alt="Logo" className="w-50 h-16 mb-8" />
 
-      <div className="w-full max-w-md border border-white/30 shadow-lg rounded-xl p-8 bg-[#1A2234]/70 backdrop-blur-sm">
+      <div className="w-full max-w-md border dark:border-white/30 border-gray-200 shadow-lg rounded-xl p-8 dark:bg-[#1A2234]/70 bg-white backdrop-blur-sm">
 
         <form onSubmit={formik.handleSubmit} className="space-y-4">
           <div className="flex gap-4">
@@ -222,7 +222,7 @@ const Signup = () => {
           <p className="mx-3 text-sm text-gray-300 whitespace-nowrap">or</p>
           <div className="flex-1 h-px bg-gray-500"></div>
         </div>
-        <div className="flex flex-row items-center justify-center gap-1 text-sm text-gray-300">
+        <div className="flex flex-row items-center justify-center gap-1 text-sm dark:text-gray-300">
           <p>Already have an account?</p>
           <a
             onClick={() => navigate("/")}

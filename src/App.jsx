@@ -8,12 +8,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Doctors from './components/Doctors';
 import Appointment from './components/Appointments';
 import AppointmentCalendar from './components/Calender';
+import PageNotFound from './components/PageNotFound';
+import Users from './components/Users';
 
 function App() {
   return (
     <Router>
       <Toaster />
       <Routes>
+        <Route path= '*' element ={<PageNotFound/>}/>
         <Route path='/' element={<Login/>} />
         <Route path='/signup' element={<Signup />} />
 
@@ -27,8 +30,7 @@ function App() {
             <Route path = 'doctors' element ={<Doctors/>} />
             <Route path = 'appointments' element ={<Appointment/>}/>
             <Route path = 'calendar' element = {<AppointmentCalendar/>}/>
-
-
+            <Route path = 'users' element = {<Users/>}/>
 
         </Route>
       </Routes>

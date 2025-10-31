@@ -3,10 +3,14 @@ import { useState, useEffect, useMemo } from 'react';
 import nextDoc from '../assets/nextDoc.png'
 import { makeAuthenticatedRequest, showToast } from '../utils/util';
 import { useNavigate } from 'react-router-dom';
+import {useStateStore} from '../store/stateStore'
+
 
 
 const Dashboard = () => {
+  const setOnDashboard = useStateStore((state)=>state.setOnDashboard)
   const navigate = useNavigate
+
   const [generalCount, setGeneralCount] = useState()
   const [stats, setStats] = useState({
     totalAppointments: 0,
@@ -22,6 +26,7 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
+    setOnDashboard();
     if (generalCount) {
       setStats({
         totalAppointments: generalCount.appointmentCount || 0,
