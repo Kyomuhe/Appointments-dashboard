@@ -2,14 +2,14 @@ import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { LayoutGrid, Calendar, Stethoscope, ChevronsLeft, Users } from 'lucide-react'
 import logo from '../assets/logo.png'
+import { useDispatch, useSelector } from 'react-redux'
+import { setActivePage } from '../store/navigationSlice'
 
 const Sidemenu = () => {
-    const user = useMemo(() => {
-      return JSON.parse(localStorage.getItem('user'));
-    }, [])
-  
+  const user = useSelector((state) => state.auth.user);
   const [isCollapsed, setIsCollapsed] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch();
   const location = useLocation()
 
   const allMenuItems = [
@@ -18,7 +18,6 @@ const Sidemenu = () => {
     { icon: Users, name: 'Doctors', id: 'doctors', path: '/layout/doctors' },
     { icon: Calendar, name: 'My Calendar', id: 'calendar', path: '/layout/calendar'},
     { icon: Users, name: 'Users', id: 'users', path: '/layout/users', requiresAdmin: true  },
-
   ]
 
   const menuItems = useMemo(()=>{
@@ -36,8 +35,9 @@ const Sidemenu = () => {
     return activeMenu?.id || 'dashboard'
   }
 
-  const handleMenuClick = (path) => {
-    navigate(path)
+  const handleMenuClick = (item) => {
+    dispatch(setActivePage(item.id))
+    navigate(item.path)
   }
 
   const activeItem = getActiveItem()
@@ -70,7 +70,7 @@ const Sidemenu = () => {
           return (
             <button
               key={item.id}
-              onClick={() => handleMenuClick(item.path)}
+              onClick={() => handleMenuClick(item)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                 isActive
                   ? 'bg-blue-600/80 text-white shadow-lg shadow-blue-500/30'
@@ -97,29 +97,28 @@ const Sidemenu = () => {
         </div>
       )}
     </div>
-          <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
-        <div className="bg-gradient-to-br from-[#0F1419]/95 to-[#1A2234]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl px-3 py-2 flex items-center justify-between">
-          {menuItems.map(item => {
-            const Icon = item.icon
-            const isActive = activeItem === item.id
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleMenuClick(item.path)}
-                className={`flex-1 flex flex-col items-center justify-center p-2 ${
-                  isActive ? 'text-blue-500' : 'text-gray-300'
-                }`}
-                aria-label={item.name}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs mt-1 truncate">{item.name}</span>
-              </button>
-            )
-          })}
-        </div>
+    <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
+      <div className="bg-gradient-to-br from-[#0F1419]/95 to-[#1A2234]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-xl px-3 py-2 flex items-center justify-between">
+        {menuItems.map(item => {
+          const Icon = item.icon
+          const isActive = activeItem === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleMenuClick(item)}
+              className={`flex-1 flex flex-col items-center justify-center p-2 ${
+                isActive ? 'text-blue-500' : 'text-gray-300'
+              }`}
+              aria-label={item.name}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-xs mt-1 truncate">{item.name}</span>
+            </button>
+          )
+        })}
       </div>
-      </>
-    
+    </div>
+    </>
   )
 }
 

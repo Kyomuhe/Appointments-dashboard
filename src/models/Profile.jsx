@@ -1,13 +1,31 @@
 import { LogOut, User, Settings } from 'lucide-react';
-import { useNavigate} from 'react-router-dom';
-import { clearTokens } from '../utils/TokenManager';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { showToast } from '../utils/util';
+import { useDispatch } from 'react-redux';
+import { logout } from '../store/authSlice';
+import { setActivePage } from '../store/navigationSlice';
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    clearTokens();
+    const currentPath = location.pathname;
+    console.log('Current path on logout:', currentPath);
+    
+    let routeId = currentPath.replace('/layout/', '').replace('/layout', '');
+    
+    if (!routeId || routeId === '/' || routeId === '') {
+      routeId = 'dashboard';
+    }
+    
+    console.log('Extracted route ID:', routeId);
+    console.log('Saving to Redux and localStorage...');
+    
+    dispatch(setActivePage(routeId));
+        
+    dispatch(logout());
     showToast('Logged out successfully', 'success');
     navigate('/');
   };

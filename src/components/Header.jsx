@@ -1,15 +1,18 @@
 import { Bell, Search } from "lucide-react"
 import avatar from '../assets/default.png'
-import { useState, useMemo, useEffect } from 'react'
+import { useState } from 'react'
 import ProfileModal from "../models/Profile"
 import { useGreeting } from "../hooks/useGreeting"
 import logo from "../assets/logo.png"
+import { useSelector } from "react-redux"
 
 const Header = () => {
   const greeting = useGreeting()
-  const user = useMemo(() => {
-    return JSON.parse(localStorage.getItem('user'));
-  }, []) //useFocus useCallback
+  // const user = useMemo(() => {
+  //   return JSON.parse(localStorage.getItem('user'));
+  // }, []) //useFocus useCallback
+
+  const user = useSelector((state) => state.auth.user);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   // useEffect(
   //   ()=>{

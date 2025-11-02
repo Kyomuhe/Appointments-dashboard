@@ -3,9 +3,14 @@ import { useFormik } from 'formik';
 import { showToast, makeRequest } from '../utils/util';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../store/authSlice';
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
   const validationSchema = Yup.object().shape({
     username: Yup.string()
       .required('Username is required')
@@ -22,54 +27,59 @@ const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
-      try{
+      try {
         const userData = {
           username: values.username,
           password: values.password
-        }
-        const response = await makeRequest ("login", "Auth", userData);
+        };
+        
+        const response = await makeRequest("login", "Auth", userData);
         const data = response;
 
-        if(data?.returnCode !==0){
+        if (data?.returnCode !== 0) {
           const errorMessage = data?.returnMessage || 'Login failed. Please try again.';
           setFieldError('general', errorMessage);
           showToast(errorMessage, 'error');
           return;
         }
 
-        const { token, user, refreshToken} = data?.returnObject || {};
-
-        if (!token || !user){
-          const errorMessage = 'server is misbahaved. please try again later.';
+        const { token, user } = data?.returnObject || {};
+        
+        if (!token || !user) {
+          const errorMessage = 'Server is misbehaved. Please try again later.';
           setFieldError('general', errorMessage);
-          showToast (errorMessage, 'error');
+          showToast(errorMessage, 'error');
           return;
         }
 
-          localStorage.setItem('accessToken', token);
-          localStorage.setItem('user', JSON.stringify(user));
-          localStorage.setItem('refreshToken', refreshToken);
-          formik.resetForm();
-          showToast ('Login successful', 'success');
-
-          navigate('/layout');
-
+        dispatch(loginSuccess({ token, user }));
         
+        formik.resetForm();
+        showToast('Login successful', 'success');
 
-      }catch(error){
+        const savedPage = localStorage.getItem('lastVisitedPage') || 'dashboard';
+        
+        // console.log('savedPage value:', savedPage);
+        // console.log('Navigating to:', `/layout/${savedPage}`);
+
+        const targetPath = `/layout/${savedPage}`;
+        navigate(targetPath, { replace: true });
+
+      } catch (error) {
         console.error('Login error:', error);
-
-      }finally{
-        setSubmitting (false);}
+        showToast('An error occurred during login', 'error');
+      } finally {
+        setSubmitting(false);
+      }
     }
   });
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-sky-50 dark:bg-[#101828] text-black dark:text-white px-4">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-[#101828] text-white px-4">
       <img src={logo} alt="Logo" className="w-50 h-16 mb-8" />
 
-      <div className="w-full max-w-md border border-gray-300 dark:border-white/30 bg-white shadow-lg rounded-xl p-8 bg:sky-500 dark:bg-[#1A2234]/70 backdrop-blur-sm">
-        {/* <h2 className="text-2xl font-semibold text-center dark:text-black text-blue-500 mb-6">Login</h2> */}
+      <div className="w-full max-w-md border border-white/30 shadow-lg rounded-xl p-8 bg-[#1A2234]/70 backdrop-blur-sm">
+        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
 
         <form onSubmit={formik.handleSubmit} className="space-y-5">
           <div>
@@ -129,17 +139,14 @@ const Login = () => {
           <div className="flex-1 h-px bg-gray-500"></div>
         </div>
 
-        <p className="text-center text-sm dark:text-gray-300">
-          Don’t have an account?{' '}
-        <div>
-        <a 
-        onClick={()=>{navigate("/signup")}}
-        className="dark:text-blue-400 text-blue-500 hover:underline cursor-pointer">
+        <p className="text-center text-sm text-gray-300">
+          Don't have an account?{' '}
+          <a
+          onClick={()=>{navigate('/signup')}}
+           className="text-blue-400 hover:underline">
             Create one
           </a>
-          </div>
         </p>
-    
       </div>
     </div>
   );

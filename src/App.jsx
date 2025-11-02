@@ -10,9 +10,12 @@ import Appointment from './components/Appointments';
 import AppointmentCalendar from './components/Calender';
 import PageNotFound from './components/PageNotFound';
 import Users from './components/Users';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 function App() {
   return (
+    <Provider store={store}>
     <Router>
       <Toaster />
       <Routes>
@@ -35,6 +38,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </Provider>
   );
 }
 
